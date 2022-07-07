@@ -1,6 +1,6 @@
 package gosip
 
-import "github.com/ghettovoice/gosip/sip"
+import "github.com/sreeram-narayanan/gosip/sip"
 
 type RequestWithContextOption interface {
 	ApplyRequestWithContext(options *RequestWithContextOptions)

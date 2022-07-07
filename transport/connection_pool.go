@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ghettovoice/gosip/log"
-	"github.com/ghettovoice/gosip/sip"
-	"github.com/ghettovoice/gosip/sip/parser"
-	"github.com/ghettovoice/gosip/timing"
-	"github.com/ghettovoice/gosip/util"
+	"github.com/sreeram-narayanan/gosip/log"
+	"github.com/sreeram-narayanan/gosip/sip"
+	"github.com/sreeram-narayanan/gosip/sip/parser"
+	"github.com/sreeram-narayanan/gosip/timing"
+	"github.com/sreeram-narayanan/gosip/util"
 )
 
 type ConnectionKey string

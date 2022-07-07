@@ -13,8 +13,8 @@ import (
 
 	"github.com/tevino/abool"
 
-	"github.com/ghettovoice/gosip/log"
-	"github.com/ghettovoice/gosip/sip"
+	"github.com/sreeram-narayanan/gosip/log"
+	"github.com/sreeram-narayanan/gosip/sip"
 )
 
 // The whitespace characters recognised by the Augmented Backus-Naur Form syntax
