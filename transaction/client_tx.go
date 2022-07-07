@@ -7,9 +7,9 @@ import (
 
 	"github.com/discoviking/fsm"
 
-	"github.com/ghettovoice/gosip/log"
-	"github.com/ghettovoice/gosip/sip"
-	"github.com/ghettovoice/gosip/timing"
+	"github.com/sreeram-narayanan/gosip/log"
+	"github.com/sreeram-narayanan/gosip/sip"
+	"github.com/sreeram-narayanan/gosip/timing"
 )
 
 type ClientTx interface {
