@@ -94,6 +94,7 @@ type layer struct {
 // - dnsAddr - DNS server address, default is 127.0.0.1:53
 func NewLayer(
 	ip net.IP,
+	proxy string,
 	dnsResolver *net.Resolver,
 	msgMapper sip.MessageMapper,
 	logger log.Logger,
@@ -104,6 +105,7 @@ func NewLayer(
 		ip:          ip,
 		dnsResolver: dnsResolver,
 		msgMapper:   msgMapper,
+		proxy:       proxy,
 
 		msgs:     make(chan sip.Message),
 		errs:     make(chan error),
@@ -429,10 +431,6 @@ func (tpl *layer) handlerError(err error) {
 	case tpl.errs <- err:
 		logger.Trace("error passed up")
 	}
-}
-
-func (tpl *layer) SetProxy(proxyAddress string) {
-	tpl.proxy = proxyAddress
 }
 
 type protocolKey string
