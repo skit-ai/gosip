@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ghettovoice/gosip/log"
+	"github.com/sreeram-narayanan/gosip/log"
 )
 
 type ListenerKey string
