@@ -72,6 +72,7 @@ type layer struct {
 	protocols   *protocolStore
 	listenPorts map[string][]sip.Port
 	ip          net.IP
+	proxy       string
 	dnsResolver *net.Resolver
 	msgMapper   sip.MessageMapper
 
@@ -256,9 +257,17 @@ func (tpl *layer) Send(msg sip.Message) error {
 			}
 		}
 
-		target, err := NewTargetFromAddr(msg.Destination())
+		var dest string
+
+		if tpl.proxy != "" {
+			dest = tpl.proxy
+		} else {
+			dest = msg.Destination()
+		}
+
+		target, err := NewTargetFromAddr(dest)
 		if err != nil {
-			return fmt.Errorf("build address target for %s: %w", msg.Destination(), err)
+			return fmt.Errorf("build address target for %s: %w", dest, err)
 		}
 
 		// dns srv lookup
@@ -315,9 +324,17 @@ func (tpl *layer) Send(msg sip.Message) error {
 			return UnsupportedProtocolError(fmt.Sprintf("protocol %s is not supported", viaHop.Transport))
 		}
 
-		target, err := NewTargetFromAddr(msg.Destination())
+		var dest string
+
+		if tpl.proxy != "" {
+			dest = tpl.proxy
+		} else {
+			dest = msg.Destination()
+		}
+
+		target, err := NewTargetFromAddr(dest)
 		if err != nil {
-			return fmt.Errorf("build address target for %s: %w", msg.Destination(), err)
+			return fmt.Errorf("build address target for %s: %w", dest, err)
 		}
 
 		logger := log.AddFieldsFrom(tpl.Log(), protocol, msg)
@@ -408,6 +425,10 @@ func (tpl *layer) handlerError(err error) {
 	case tpl.errs <- err:
 		logger.Trace("error passed up")
 	}
+}
+
+func (tpl *layer) SetProxy(proxyAddress string) {
+	tpl.proxy = proxyAddress
 }
 
 type protocolKey string
