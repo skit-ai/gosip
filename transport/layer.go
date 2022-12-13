@@ -244,13 +244,7 @@ func (tpl *layer) Send(msg sip.Message) error {
 			}
 		}
 
-		var dest string
-
-		if msg.Proxy() != "" {
-			dest = msg.Proxy()
-		} else {
-			dest = msg.Destination()
-		}
+		dest := msg.Destination()
 
 		target, err := NewTargetFromAddr(dest)
 		if err != nil {
@@ -313,13 +307,7 @@ func (tpl *layer) Send(msg sip.Message) error {
 			return err
 		}
 
-		var dest string
-
-		if msg.Proxy() != "" {
-			dest = msg.Proxy()
-		} else {
-			dest = msg.Destination()
-		}
+		dest := msg.Destination()
 
 		target, err := NewTargetFromAddr(dest)
 		if err != nil {
