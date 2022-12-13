@@ -111,6 +111,8 @@ type Message interface {
 	SetSource(src string)
 	Destination() string
 	SetDestination(dest string)
+	Proxy() string
+	SetProxy(proxy string)
 
 	IsCancel() bool
 	IsAck() bool
@@ -415,6 +417,7 @@ type message struct {
 	startLine  func() string
 	tp         string
 	src        string
+	proxy      string
 	dest       string
 	fields     log.Fields
 }
@@ -520,6 +523,18 @@ func (msg *message) Destination() string {
 func (msg *message) SetDestination(dest string) {
 	msg.mu.Lock()
 	msg.dest = dest
+	msg.mu.Unlock()
+}
+
+func (msg *message) Proxy() string {
+	msg.mu.RLock()
+	defer msg.mu.RUnlock()
+	return msg.proxy
+}
+
+func (msg *message) SetProxy(proxy string) {
+	msg.mu.Lock()
+	msg.proxy = proxy
 	msg.mu.Unlock()
 }
 
