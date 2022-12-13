@@ -224,15 +224,7 @@ func (req *request) Source() string {
 	return fmt.Sprintf("%v:%v", host, port)
 }
 
-func (req *request) Proxy() string {
-	return req.message.Proxy()
-}
-
 func (req *request) Destination() string {
-	if dest := req.message.Destination(); dest != "" {
-		return dest
-	}
-
 	var uri *SipUri
 	if hdrs := req.GetHeaders("Route"); len(hdrs) > 0 {
 		routeHeader, ok := hdrs[0].(*RouteHeader)
@@ -240,7 +232,12 @@ func (req *request) Destination() string {
 			uri = routeHeader.Addresses[0].(*SipUri)
 		}
 	}
+
 	if uri == nil {
+		if dest := req.message.Destination(); dest != "" {
+			return dest
+		}
+
 		if u, ok := req.Recipient().(*SipUri); ok {
 			uri = u
 		} else {
