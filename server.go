@@ -47,7 +47,6 @@ type Server interface {
 
 type TransportLayerFactory func(
 	ip net.IP,
-	proxy string,
 	dnsResolver *net.Resolver,
 	msgMapper sip.MessageMapper,
 	logger log.Logger,
@@ -151,7 +150,7 @@ func NewServer(
 	srv.log = logger.WithFields(log.Fields{
 		"sip_server_ptr": fmt.Sprintf("%p", srv),
 	})
-	srv.tp = tpFactory(ip, "", dnsResolver, config.MsgMapper, srv.Log())
+	srv.tp = tpFactory(ip, dnsResolver, config.MsgMapper, srv.Log())
 	sipTp := &sipTransport{
 		tpl: srv.tp,
 		srv: srv,

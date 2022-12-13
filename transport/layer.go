@@ -72,7 +72,6 @@ type layer struct {
 	protocols   *protocolStore
 	listenPorts map[string][]sip.Port
 	ip          net.IP
-	proxy       string
 	dnsResolver *net.Resolver
 	msgMapper   sip.MessageMapper
 
@@ -94,7 +93,6 @@ type layer struct {
 // - dnsAddr - DNS server address, default is 127.0.0.1:53
 func NewLayer(
 	ip net.IP,
-	proxy string,
 	dnsResolver *net.Resolver,
 	msgMapper sip.MessageMapper,
 	logger log.Logger,
@@ -105,7 +103,6 @@ func NewLayer(
 		ip:          ip,
 		dnsResolver: dnsResolver,
 		msgMapper:   msgMapper,
-		proxy:       proxy,
 
 		msgs:     make(chan sip.Message),
 		errs:     make(chan error),
@@ -249,8 +246,8 @@ func (tpl *layer) Send(msg sip.Message) error {
 
 		var dest string
 
-		if tpl.proxy != "" {
-			dest = tpl.proxy
+		if msg.Proxy() != "" {
+			dest = msg.Proxy()
 		} else {
 			dest = msg.Destination()
 		}
@@ -318,8 +315,8 @@ func (tpl *layer) Send(msg sip.Message) error {
 
 		var dest string
 
-		if tpl.proxy != "" {
-			dest = tpl.proxy
+		if msg.Proxy() != "" {
+			dest = msg.Proxy()
 		} else {
 			dest = msg.Destination()
 		}

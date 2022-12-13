@@ -224,6 +224,10 @@ func (req *request) Source() string {
 	return fmt.Sprintf("%v:%v", host, port)
 }
 
+func (req *request) Proxy() string {
+	return req.message.Proxy()
+}
+
 func (req *request) Destination() string {
 	if dest := req.message.Destination(); dest != "" {
 		return dest
