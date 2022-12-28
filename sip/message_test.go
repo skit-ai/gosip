@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/sreeram-narayanan/gosip/sip"
+	"github.com/skit-ai/gosip/sip"
 )
 
 // Generic test for testing anything with a String() method.

@@ -7,8 +7,8 @@ import (
 	"net"
 	"time"
 
-	"github.com/sreeram-narayanan/gosip/log"
-	"github.com/sreeram-narayanan/gosip/sip"
+	"github.com/skit-ai/gosip/log"
+	"github.com/skit-ai/gosip/sip"
 )
 
 type wssProtocol struct {

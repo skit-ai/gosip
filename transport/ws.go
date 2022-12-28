@@ -12,8 +12,8 @@ import (
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
 
-	"github.com/sreeram-narayanan/gosip/log"
-	"github.com/sreeram-narayanan/gosip/sip"
+	"github.com/skit-ai/gosip/log"
+	"github.com/skit-ai/gosip/sip"
 )
 
 var (
@@ -157,7 +157,7 @@ func (p *wsProtocol) Done() <-chan struct{} {
 	return p.connections.Done()
 }
 
-//piping new connections to connection pool for serving
+// piping new connections to connection pool for serving
 func (p *wsProtocol) pipePools() {
 	defer close(p.conns)
 

@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sreeram-narayanan/gosip/sip"
-	"github.com/sreeram-narayanan/gosip/sip/parser"
-	"github.com/sreeram-narayanan/gosip/testutils"
+	"github.com/skit-ai/gosip/sip"
+	"github.com/skit-ai/gosip/sip/parser"
+	"github.com/skit-ai/gosip/testutils"
 )
 
 // Level of logs output during testing.
@@ -306,23 +306,23 @@ func TestHostPort(t *testing.T) {
 }
 
 /*
-func TestHeaderBlocks(t *testing.T) {
-	doTests([]test{
-		test{headerBlockInput([]string{"All on one line."}), &headerBlockResult{"All on one line.", 1}},
-		test{headerBlockInput([]string{"Line one", "Line two."}), &headerBlockResult{"Line one", 1}},
-		test{headerBlockInput([]string{"Line one", " then an indent"}), &headerBlockResult{"Line one then an indent", 2}},
-		test{headerBlockInput([]string{"Line one", " then an indent", "then line two"}), &headerBlockResult{"Line one then an indent", 2}},
-		test{headerBlockInput([]string{"Line one", "Line two", " then an indent"}), &headerBlockResult{"Line one", 1}},
-		test{headerBlockInput([]string{"Line one", "\twith tab indent"}), &headerBlockResult{"Line one with tab indent", 2}},
-		test{headerBlockInput([]string{"Line one", "      with a big indent"}), &headerBlockResult{"Line one with a big indent", 2}},
-		test{headerBlockInput([]string{"Line one", " \twith space then tab"}), &headerBlockResult{"Line one with space then tab", 2}},
-		test{headerBlockInput([]string{"Line one", "\t    with tab then spaces"}), &headerBlockResult{"Line one with tab then spaces", 2}},
-		test{headerBlockInput([]string{""}), &headerBlockResult{"", 0}},
-		test{headerBlockInput([]string{" "}), &headerBlockResult{" ", 1}},
-		test{headerBlockInput([]string{}), &headerBlockResult{"", 0}},
-		test{headerBlockInput([]string{" foo"}), &headerBlockResult{" foo", 1}},
-	}, t)
-}
+	func TestHeaderBlocks(t *testing.T) {
+		doTests([]test{
+			test{headerBlockInput([]string{"All on one line."}), &headerBlockResult{"All on one line.", 1}},
+			test{headerBlockInput([]string{"Line one", "Line two."}), &headerBlockResult{"Line one", 1}},
+			test{headerBlockInput([]string{"Line one", " then an indent"}), &headerBlockResult{"Line one then an indent", 2}},
+			test{headerBlockInput([]string{"Line one", " then an indent", "then line two"}), &headerBlockResult{"Line one then an indent", 2}},
+			test{headerBlockInput([]string{"Line one", "Line two", " then an indent"}), &headerBlockResult{"Line one", 1}},
+			test{headerBlockInput([]string{"Line one", "\twith tab indent"}), &headerBlockResult{"Line one with tab indent", 2}},
+			test{headerBlockInput([]string{"Line one", "      with a big indent"}), &headerBlockResult{"Line one with a big indent", 2}},
+			test{headerBlockInput([]string{"Line one", " \twith space then tab"}), &headerBlockResult{"Line one with space then tab", 2}},
+			test{headerBlockInput([]string{"Line one", "\t    with tab then spaces"}), &headerBlockResult{"Line one with tab then spaces", 2}},
+			test{headerBlockInput([]string{""}), &headerBlockResult{"", 0}},
+			test{headerBlockInput([]string{" "}), &headerBlockResult{" ", 1}},
+			test{headerBlockInput([]string{}), &headerBlockResult{"", 0}},
+			test{headerBlockInput([]string{" foo"}), &headerBlockResult{" foo", 1}},
+		}, t)
+	}
 */
 func TestToHeaders(t *testing.T) {
 	fooEqBar := sip.NewParams().Add("foo", sip.String{"bar"})

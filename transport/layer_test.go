@@ -9,9 +9,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/sreeram-narayanan/gosip/sip"
-	"github.com/sreeram-narayanan/gosip/testutils"
-	"github.com/sreeram-narayanan/gosip/transport"
+	"github.com/skit-ai/gosip/sip"
+	"github.com/skit-ai/gosip/testutils"
+	"github.com/skit-ai/gosip/transport"
 )
 
 var _ = Describe("TransportLayer", func() {

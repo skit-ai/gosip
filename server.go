@@ -8,11 +8,11 @@ import (
 	"net"
 	"sync"
 
-	"github.com/sreeram-narayanan/gosip/log"
-	"github.com/sreeram-narayanan/gosip/sip"
-	"github.com/sreeram-narayanan/gosip/transaction"
-	"github.com/sreeram-narayanan/gosip/transport"
-	"github.com/sreeram-narayanan/gosip/util"
+	"github.com/skit-ai/gosip/log"
+	"github.com/skit-ai/gosip/sip"
+	"github.com/skit-ai/gosip/transaction"
+	"github.com/skit-ai/gosip/transport"
+	"github.com/skit-ai/gosip/util"
 
 	"github.com/tevino/abool"
 )

@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sreeram-narayanan/gosip/log"
-	"github.com/sreeram-narayanan/gosip/sip"
-	"github.com/sreeram-narayanan/gosip/sip/parser"
-	"github.com/sreeram-narayanan/gosip/timing"
-	"github.com/sreeram-narayanan/gosip/util"
+	"github.com/skit-ai/gosip/log"
+	"github.com/skit-ai/gosip/sip"
+	"github.com/skit-ai/gosip/sip/parser"
+	"github.com/skit-ai/gosip/timing"
+	"github.com/skit-ai/gosip/util"
 )
 
 type ConnectionKey string
