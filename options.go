@@ -1,6 +1,6 @@
 package gosip
 
-import "github.com/sreeram-narayanan/gosip/sip"
+import "github.com/skit-ai/gosip/sip"
 
 type RequestWithContextOption interface {
 	ApplyRequestWithContext(options *RequestWithContextOptions)

@@ -1,4 +1,4 @@
-module github.com/sreeram-narayanan/gosip
+module github.com/skit-ai/gosip
 
 go 1.13
 

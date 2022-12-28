@@ -3,7 +3,7 @@ package sip
 import (
 	"fmt"
 
-	"github.com/sreeram-narayanan/gosip/util"
+	"github.com/skit-ai/gosip/util"
 )
 
 type RequestBuilder struct {

@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/sreeram-narayanan/gosip/log"
-	"github.com/sreeram-narayanan/gosip/sip"
+	"github.com/skit-ai/gosip/log"
+	"github.com/skit-ai/gosip/sip"
 )
 
 const (
@@ -341,7 +341,7 @@ func (err UnsupportedProtocolError) Error() string {
 	return "transport.UnsupportedProtocolError: " + string(err)
 }
 
-//TLSConfig for TLS and WSS only
+// TLSConfig for TLS and WSS only
 type TLSConfig struct {
 	Domain string
 	Cert   string

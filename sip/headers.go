@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/sreeram-narayanan/gosip/util"
+	"github.com/skit-ai/gosip/util"
 )
 
 // SIP Headers structs

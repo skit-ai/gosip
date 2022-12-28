@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sreeram-narayanan/gosip/util"
+	"github.com/skit-ai/gosip/util"
 )
 
 const (

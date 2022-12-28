@@ -5,9 +5,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/sreeram-narayanan/gosip"
-	"github.com/sreeram-narayanan/gosip/log"
-	"github.com/sreeram-narayanan/gosip/transport"
+	"github.com/skit-ai/gosip"
+	"github.com/skit-ai/gosip/log"
+	"github.com/skit-ai/gosip/transport"
 )
 
 var (

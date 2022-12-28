@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/sreeram-narayanan/gosip/log"
+	"github.com/skit-ai/gosip/log"
 )
 
 // The buffer size of the primitive input and output chans.

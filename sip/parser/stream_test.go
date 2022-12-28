@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sreeram-narayanan/gosip/sip"
-	"github.com/sreeram-narayanan/gosip/sip/parser"
-	"github.com/sreeram-narayanan/gosip/testutils"
+	"github.com/skit-ai/gosip/sip"
+	"github.com/skit-ai/gosip/sip/parser"
+	"github.com/skit-ai/gosip/testutils"
 )
 
 // Level of logs output during testing.

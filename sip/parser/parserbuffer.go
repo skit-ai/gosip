@@ -8,7 +8,7 @@ import (
 	"io"
 	"sync"
 
-	"github.com/sreeram-narayanan/gosip/log"
+	"github.com/skit-ai/gosip/log"
 )
 
 // parserBuffer is a specialized buffer for use in the parser.

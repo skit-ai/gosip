@@ -12,8 +12,8 @@ import (
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
 
-	"github.com/sreeram-narayanan/gosip/log"
-	"github.com/sreeram-narayanan/gosip/sip"
+	"github.com/skit-ai/gosip/log"
+	"github.com/skit-ai/gosip/sip"
 )
 
 var (
