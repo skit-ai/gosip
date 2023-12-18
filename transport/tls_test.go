@@ -26,7 +26,7 @@ var _ = Describe("TlsProtocol", func() {
 		wg                        *sync.WaitGroup
 	)
 
-	rootDir := testutils.GetProjectRootPath("ghettovoice/gosip")
+	rootDir := testutils.GetProjectRootPath("skit-ai/gosip")
 	network := "tcp"
 	port1 := 9061
 	port2 := port1 + 1
