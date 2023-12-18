@@ -210,12 +210,12 @@ func (res *response) Transport() string {
 }
 
 func (res *response) Destination() string {
-	if dest := res.message.Destination(); dest != "" {
-		return dest
-	}
-
 	viaHop, ok := res.ViaHop()
 	if !ok {
+		if dest := res.message.Destination(); dest != "" {
+			return dest
+		}
+
 		return ""
 	}
 
