@@ -325,7 +325,7 @@ func (tpl *layer) Send(msg sip.Message) error {
 		}
 
 		logger := log.AddFieldsFrom(tpl.Log(), protocol, msg)
-		logger.Debugf("sending SIP response:\n%s", msg)
+		logger.Debugf("sending target:%s SIP response:\n%s", target.Addr(), msg)
 
 		if err = protocol.Send(target, msg); err != nil {
 			return fmt.Errorf("send SIP message through %s protocol to %s: %w", protocol.Network(), target.Addr(), err)
