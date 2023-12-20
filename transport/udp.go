@@ -124,6 +124,8 @@ func (p *udpProtocol) Send(target *Target, msg sip.Message) error {
 					Op:       fmt.Sprintf("write SIP message to the %s connection", conn.Key()),
 					ProtoPtr: fmt.Sprintf("%p", p),
 				}
+			} else {
+				logger.Debugf("ports %s %s", parts[2], port)
 			}
 
 			return nil
