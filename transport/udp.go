@@ -82,10 +82,16 @@ func (p *udpProtocol) Listen(target *Target, options ...ListenOption) error {
 }
 
 func (p *udpProtocol) Send(target *Target, msg sip.Message) error {
+	p.Log().Debug("sending SIP message", target)
+
 	target = FillTargetHostAndPort(p.Network(), target)
+
+	p.Log().Debug("target filled", target)
 
 	// validate remote address
 	if target.Host == "" {
+		p.Log().Error("empty remote target host")
+
 		return &ProtocolError{
 			fmt.Errorf("empty remote target host"),
 			fmt.Sprintf("send SIP message to %s %s", p.Network(), target.Addr()),
@@ -96,6 +102,8 @@ func (p *udpProtocol) Send(target *Target, msg sip.Message) error {
 	// resolve remote address
 	raddr, err := net.ResolveUDPAddr(p.network, target.Addr())
 	if err != nil {
+		p.Log().Errorf("resolve target address %s %s", p.Network(), target.Addr())
+
 		return &ProtocolError{
 			err,
 			fmt.Sprintf("resolve target address %s %s", p.Network(), target.Addr()),
@@ -105,6 +113,8 @@ func (p *udpProtocol) Send(target *Target, msg sip.Message) error {
 
 	_, port, err := net.SplitHostPort(msg.Source())
 	if err != nil {
+		p.Log().Error("resolve source port")
+
 		return &ProtocolError{
 			Err:      err,
 			Op:       "resolve source port",
@@ -119,6 +129,8 @@ func (p *udpProtocol) Send(target *Target, msg sip.Message) error {
 			logger.Tracef("writing SIP message to %s %s", p.Network(), raddr)
 
 			if _, err = conn.WriteTo([]byte(msg.String()), raddr); err != nil {
+				p.Log().Error("write to connect failed", err)
+
 				return &ProtocolError{
 					Err:      err,
 					Op:       fmt.Sprintf("write SIP message to the %s connection", conn.Key()),
@@ -129,6 +141,8 @@ func (p *udpProtocol) Send(target *Target, msg sip.Message) error {
 			return nil
 		}
 	}
+
+	p.Log().Error("connection on port %s not found", port)
 
 	return &ProtocolError{
 		fmt.Errorf("connection on port %s not found", port),
