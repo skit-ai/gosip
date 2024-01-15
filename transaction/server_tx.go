@@ -161,9 +161,7 @@ func (tx *serverTx) Receive(msg sip.Message) error {
 
 func (tx *serverTx) Respond(res sip.Response) error {
 	if res.IsCancel() {
-		err := tx.tpl.Send(res)
-		tx.Log().Error("Respond failed", err)
-
+		_ = tx.tpl.Send(res)
 		return nil
 	}
 
