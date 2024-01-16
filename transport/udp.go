@@ -3,7 +3,6 @@ package transport
 import (
 	"fmt"
 	"net"
-	"strings"
 
 	"github.com/skit-ai/gosip/log"
 	"github.com/skit-ai/gosip/sip"
@@ -82,11 +81,7 @@ func (p *udpProtocol) Listen(target *Target, options ...ListenOption) error {
 }
 
 func (p *udpProtocol) Send(target *Target, msg sip.Message) error {
-	p.Log().Debug("sending SIP message", target)
-
 	target = FillTargetHostAndPort(p.Network(), target)
-
-	p.Log().Debug("target filled", target)
 
 	// validate remote address
 	if target.Host == "" {
@@ -102,7 +97,7 @@ func (p *udpProtocol) Send(target *Target, msg sip.Message) error {
 	// resolve remote address
 	raddr, err := net.ResolveUDPAddr(p.network, target.Addr())
 	if err != nil {
-		p.Log().Errorf("resolve target address %s %s", p.Network(), target.Addr())
+		p.Log().Errorf("resolve target address %s %s %s", p.Network(), target.Addr(), err)
 
 		return &ProtocolError{
 			err,
@@ -111,42 +106,30 @@ func (p *udpProtocol) Send(target *Target, msg sip.Message) error {
 		}
 	}
 
-	_, port, err := net.SplitHostPort(msg.Source())
-	if err != nil {
-		p.Log().Error("resolve source port")
+	connPool := p.connections.All()
+
+	if len(connPool) == 0 {
+		p.Log().Error("no connection found")
+
+		return &ProtocolError{
+			fmt.Errorf("no connection found"),
+			"search connection",
+			fmt.Sprintf("%p", p),
+		}
+	}
+
+	logger := log.AddFieldsFrom(p.Log(), connPool[0], msg)
+	logger.Tracef("writing SIP message to %s %s", p.Network(), raddr)
+
+	if _, err = connPool[0].WriteTo([]byte(msg.String()), raddr); err != nil {
+		p.Log().Error("write to connection failed", err)
 
 		return &ProtocolError{
 			Err:      err,
-			Op:       "resolve source port",
+			Op:       fmt.Sprintf("write SIP message to the %s connection", connPool[0].Key()),
 			ProtoPtr: fmt.Sprintf("%p", p),
 		}
 	}
 
-	for _, conn := range p.connections.All() {
-		parts := strings.Split(string(conn.Key()), ":")
-		if parts[2] == port {
-			logger := log.AddFieldsFrom(p.Log(), conn, msg)
-			logger.Tracef("writing SIP message to %s %s", p.Network(), raddr)
-
-			if _, err = conn.WriteTo([]byte(msg.String()), raddr); err != nil {
-				p.Log().Error("write to connect failed", err)
-
-				return &ProtocolError{
-					Err:      err,
-					Op:       fmt.Sprintf("write SIP message to the %s connection", conn.Key()),
-					ProtoPtr: fmt.Sprintf("%p", p),
-				}
-			}
-
-			return nil
-		}
-	}
-
-	p.Log().Error("connection on port %s not found", port)
-
-	return &ProtocolError{
-		fmt.Errorf("connection on port %s not found", port),
-		"search connection",
-		fmt.Sprintf("%p", p),
-	}
+	return nil
 }
