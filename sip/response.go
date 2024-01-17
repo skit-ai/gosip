@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/skit-ai/gosip/log"
 )
@@ -196,7 +195,7 @@ func (res *response) IsCancel() bool {
 
 func (res *response) Transport() string {
 	if tp := res.message.Transport(); tp != "" {
-		return strings.ToUpper(tp)
+		return tp
 	}
 
 	var tp string

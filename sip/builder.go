@@ -279,7 +279,7 @@ func (rb *RequestBuilder) Build() (Request, error) {
 		return nil, fmt.Errorf("empty 'From' header")
 	}
 	if rb.to == nil {
-		return nil, fmt.Errorf("empty 'To' header")
+		return nil, fmt.Errorf("empty 'From' header")
 	}
 
 	hdrs := make([]Header, 0)

@@ -619,10 +619,6 @@ func (tx *clientTx) delete() {
 		tx.timer_d.Stop()
 		tx.timer_d = nil
 	}
-	if tx.timer_m != nil {
-		tx.timer_m.Stop()
-		tx.timer_m = nil
-	}
 	tx.mu.Unlock()
 }
 

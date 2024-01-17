@@ -12,6 +12,7 @@ import (
 	"github.com/skit-ai/gosip/sip"
 	"github.com/skit-ai/gosip/sip/parser"
 	"github.com/skit-ai/gosip/timing"
+	"github.com/skit-ai/gosip/util"
 )
 
 type ConnectionKey string
@@ -413,6 +414,7 @@ type connectionHandler struct {
 	cancelOnce sync.Once
 	canceled   chan struct{}
 	done       chan struct{}
+	addrs      util.ElasticChan
 
 	log log.Logger
 }
@@ -527,19 +529,45 @@ func (handler *connectionHandler) Serve() {
 	defer handler.Log().Debug("stop serve connection")
 
 	// start connection serving goroutines
-	handler.readConnection()
+	msgs, errs := handler.readConnection()
+	handler.pipeOutputs(msgs, errs)
 }
 
-func (handler *connectionHandler) readStream() {
+func (handler *connectionHandler) readConnection() (<-chan sip.Message, <-chan error) {
 	msgs := make(chan sip.Message)
 	errs := make(chan error)
-	strPrs := parser.NewParser(msgs, errs, true, handler.Log())
-	raddr := handler.Connection().RemoteAddr().String()
+	streamed := handler.Connection().Streamed()
+	var (
+		pktPrs *parser.PacketParser
+		strPrs parser.Parser
+	)
+	if streamed {
+		strPrs = parser.NewParser(msgs, errs, streamed, handler.Log())
+	} else {
+		pktPrs = parser.NewPacketParser(handler.Log())
+	}
+
+	var raddr net.Addr
+	if streamed {
+		raddr = handler.Connection().RemoteAddr()
+	} else {
+		handler.addrs.Init()
+		handler.addrs.SetLog(handler.Log())
+		handler.addrs.Run()
+	}
 
 	go func() {
 		defer func() {
-			_ = handler.Connection().Close()
-			strPrs.Stop()
+			handler.Connection().Close()
+			if streamed {
+				strPrs.Stop()
+			} else {
+				pktPrs.Stop()
+			}
+
+			if !streamed {
+				handler.addrs.Stop()
+			}
 
 			close(msgs)
 			close(errs)
@@ -549,6 +577,7 @@ func (handler *connectionHandler) readStream() {
 		defer handler.Log().Debug("stop read connection")
 
 		buf := make([]byte, bufferSize)
+
 		var (
 			num int
 			err error
@@ -556,65 +585,77 @@ func (handler *connectionHandler) readStream() {
 
 		for {
 			// wait for data
-			num, err = handler.Connection().Read(buf)
+			if streamed {
+				num, err = handler.Connection().Read(buf)
+			} else {
+				num, raddr, err = handler.Connection().ReadFrom(buf)
+			}
+
 			if err != nil {
-				handler.handleError(err, raddr)
+				//// if we get timeout error just go further and try read on the next iteration
+				//var netErr net.Error
+				//if errors.As(err, &netErr) {
+				//	if netErr.Timeout() || netErr.Temporary() {
+				//		handler.Log().Tracef(
+				//			"connection read failed due to timeout or temporary unavailable reason: %s, sleep by %s",
+				//			err,
+				//			netErrRetryTime,
+				//		)
+				//
+				//		time.Sleep(netErrRetryTime)
+				//
+				//		continue
+				//	}
+				//}
+
+				// broken or closed connection
+				// so send error and exit
+				handler.handleError(err, fmt.Sprintf("%v", raddr))
 
 				return
 			}
+
 			data := buf[:num]
-			if _, err := strPrs.Write(data); err != nil {
-				handler.handleError(err, raddr)
+
+			// skip empty udp packets
+			if len(bytes.Trim(data, "\x00")) == 0 {
+				handler.Log().Tracef("skip empty data: %#v", data)
+
+				continue
+			}
+
+			// parse received data
+			if streamed {
+				if _, err := strPrs.Write(data); err != nil {
+					handler.handleError(err, fmt.Sprintf("%v", raddr))
+				}
+			} else {
+				if msg, err := pktPrs.ParseMessage(data); err == nil {
+					handler.handleMessage(msg, fmt.Sprintf("%v", raddr))
+				} else {
+					handler.handleError(err, fmt.Sprintf("%v", raddr))
+				}
 			}
 		}
 	}()
 
-	handler.pipeOutputs(raddr, msgs, errs)
+	return msgs, errs
 }
 
-func (handler *connectionHandler) readPacket() {
-	handler.Log().Debug("begin read connection")
-	defer handler.Log().Debug("stop read connection")
+func (handler *connectionHandler) pipeOutputs(msgs <-chan sip.Message, errs <-chan error) {
+	streamed := handler.Connection().Streamed()
 
-	buf := make([]byte, bufferSize)
-	pktPrs := parser.NewPacketParser(handler.Log())
-	var (
-		num   int
-		err   error
-		raddr net.Addr
-	)
-	for {
-		num, raddr, err = handler.Connection().ReadFrom(buf)
-		if err != nil {
-			handler.handleError(err, "")
-			return
-		}
-		if len(bytes.Trim(buf[:num], "\x00")) == 0 {
-			continue
-		}
-		if msg, err := pktPrs.ParseMessage(buf[:num]); err == nil {
-			handler.handleMessage(msg, raddr.String())
-		} else {
-			handler.handleError(err, raddr.String())
-		}
-	}
-}
-
-func (handler *connectionHandler) readConnection() {
-	if handler.Connection().Streamed() {
-		handler.readStream()
-	} else {
-		handler.readPacket()
-	}
-}
-
-func (handler *connectionHandler) pipeOutputs(raddr string, msgs <-chan sip.Message, errs <-chan error) {
 	handler.Log().Debug("begin pipe outputs")
 	defer handler.Log().Debug("stop pipe outputs")
 
 	for {
 		select {
 		case <-handler.timer.C():
+			var raddr string
+			if streamed {
+				raddr = fmt.Sprintf("%v", handler.Connection().RemoteAddr())
+			}
+
 			if handler.Expiry().IsZero() {
 				// handler expiryTime is zero only when TTL = 0 (unlimited handler)
 				// so we must not get here with zero expiryTime
@@ -628,13 +669,28 @@ func (handler *connectionHandler) pipeOutputs(raddr string, msgs <-chan sip.Mess
 				return
 			}
 
-			handler.handleMessage(msg, raddr)
+			handler.handleMessage(msg, handler.getRemoteAddr())
 		case err, ok := <-errs:
 			if !ok {
 				return
 			}
 
-			handler.handleError(err, raddr)
+			handler.handleError(err, handler.getRemoteAddr())
+		}
+	}
+}
+
+func (handler *connectionHandler) getRemoteAddr() string {
+	if handler.Connection().Streamed() {
+		return fmt.Sprintf("%v", handler.Connection().RemoteAddr())
+	} else {
+		// use non-blocking read because remote address already should be here
+		// or error occurred in read connection goroutine
+		select {
+		case v := <-handler.addrs.Out:
+			return v.(string)
+		default:
+			return "<nil>"
 		}
 	}
 }
