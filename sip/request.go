@@ -147,7 +147,7 @@ func (req *request) IsCancel() bool {
 
 func (req *request) Transport() string {
 	if tp := req.message.Transport(); tp != "" {
-		return strings.ToUpper(tp)
+		return tp
 	}
 
 	var tp string
