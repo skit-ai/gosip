@@ -193,10 +193,13 @@ func (params *headerParams) ToString(sep uint8) string {
 		buffer.WriteString(fmt.Sprintf("%s", Escape(key, EncodeQueryComponent)))
 
 		if val, ok := val.(String); ok {
-			if strings.ContainsAny(val.String(), abnfWs) {
-				buffer.WriteString(fmt.Sprintf("=\"%s\"", Escape(val.String(), EncodeQueryComponent)))
+			valStr := val.String()
+			if valStr != "" && valStr[0] == '"' && valStr[len(valStr)-1] == '"' { // already escaped header param value
+				buffer.WriteString(fmt.Sprintf("=%s", valStr))
+			} else if strings.ContainsAny(valStr, abnfWs) {
+				buffer.WriteString(fmt.Sprintf("=\"%s\"", strings.ReplaceAll(Escape(valStr, EncodeQueryComponent), "\"", "\\\"")))
 			} else {
-				buffer.WriteString(fmt.Sprintf("=%s", Escape(val.String(), EncodeQueryComponent)))
+				buffer.WriteString(fmt.Sprintf("=%s", Escape(valStr, EncodeQueryComponent)))
 			}
 		}
 	}
@@ -1429,6 +1432,40 @@ func (ua *UserAgentHeader) Equals(other interface{}) bool {
 	return false
 }
 
+type ServerHeader string
+
+func (srv *ServerHeader) String() string {
+	return fmt.Sprintf("%s: %s", srv.Name(), srv.Value())
+}
+
+func (srv *ServerHeader) Name() string { return "Server" }
+
+func (srv ServerHeader) Value() string { return string(srv) }
+
+func (srv *ServerHeader) Clone() Header { return srv }
+
+func (srv *ServerHeader) Equals(other interface{}) bool {
+	if h, ok := other.(ServerHeader); ok {
+		if srv == nil {
+			return false
+		}
+
+		return *srv == h
+	}
+	if h, ok := other.(*ServerHeader); ok {
+		if srv == h {
+			return true
+		}
+		if srv == nil && h != nil || srv != nil && h == nil {
+			return false
+		}
+
+		return *srv == *h
+	}
+
+	return false
+}
+
 type AllowHeader []RequestMethod
 
 func (allow AllowHeader) String() string {
@@ -1646,6 +1683,38 @@ func (route *RecordRouteHeader) Equals(other interface{}) bool {
 		}
 
 		return true
+	}
+
+	return false
+}
+
+type Event string
+
+func (et *Event) String() string { return fmt.Sprintf("%s: %s", et.Name(), et.Value()) }
+
+func (et *Event) Name() string { return "Event" }
+
+func (et Event) Value() string { return string(et) }
+
+func (et *Event) Clone() Header { return et }
+
+func (et *Event) Equals(other interface{}) bool {
+	if h, ok := other.(Event); ok {
+		if et == nil {
+			return false
+		}
+
+		return *et == h
+	}
+	if h, ok := other.(*Event); ok {
+		if et == h {
+			return true
+		}
+		if et == nil && h != nil || et != nil && h == nil {
+			return false
+		}
+
+		return *et == *h
 	}
 
 	return false
