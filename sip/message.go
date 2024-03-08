@@ -253,13 +253,17 @@ func (hs *headers) Headers() []Header {
 }
 
 func (hs *headers) GetHeaders(name string) []Header {
-	name = strings.ToLower(name)
+	lowerName := strings.ToLower(name)
 	hs.mu.RLock()
 	defer hs.mu.RUnlock()
 	if hs.headers == nil {
 		hs.headers = map[string][]Header{}
 		hs.headerOrder = []string{}
 	}
+	if headers, ok := hs.headers[lowerName]; ok {
+		return headers
+	}
+
 	if headers, ok := hs.headers[name]; ok {
 		return headers
 	}
