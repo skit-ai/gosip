@@ -196,7 +196,7 @@ func (params *headerParams) ToString(sep uint8) string {
 			if strings.ContainsAny(val.String(), abnfWs) {
 				buffer.WriteString(fmt.Sprintf("=\"%s\"", Escape(val.String(), EncodeQueryComponent)))
 			} else {
-				buffer.WriteString(fmt.Sprintf("=%s", Escape(val.String(), EncodeQueryComponent)))
+				buffer.WriteString(fmt.Sprintf("=%s", strings.ReplaceAll(Escape(val.String(), EncodeQueryComponent), "\"", "\\\"")))
 			}
 		}
 	}
